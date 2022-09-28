@@ -17,6 +17,9 @@ app.use(bodyParser.json());
 app.use("/api", authRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 
 const port = process.env.PORT;
 app.listen(port, () => {
