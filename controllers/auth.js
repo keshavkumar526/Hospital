@@ -1,13 +1,13 @@
-const mailgun = require("mailgun-js");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const sgMail = require("@sendgrid/mail");
 const HospitalDetail = require("../models/hospitalDetails");
 const InChargeDetail = require("../models/InChargeDetail");
 // const pdfService = require("../PdfTemplate/pdftemplate");
 
-const DOMAIN = "sandbox20d491ccef4e494f87c778e0b197904f.mailgun.org";
-const mg = mailgun({ apiKey: process.env.MAILGUN_APIKEY, domain: DOMAIN });
+// const DOMAIN = "sandbox20d491ccef4e494f87c778e0b197904f.mailgun.org";
+// const mg = mailgun({ apiKey: process.env.MAILGUN_APIKEY, domain: DOMAIN });
 
 exports.signup = async (req, res) => {
   console.log(req.body);
@@ -35,26 +35,50 @@ exports.signup = async (req, res) => {
       });
       newUser = await newUser.save();
     }
+    sgMail.setApiKey(process.env.SENDGRID_APIKEY);
 
-    const data = {
-      from: "noreply@hello.com",
+    const sendMail = async (msg) => {
+      try {
+        await sgMail.send(msg);
+        const user = await User.findOne({ email }).exec();
+        res.status(200).send(user.token);
+      } catch (err) {
+        console.log(err);
+        if (err.response) {
+          console.error(err.response.body);
+        }
+      }
+    };
+    sendMail({
       to: email,
+      from: "keshav@growhut.in",
       subject: "Account Activation Link",
       html: `
           <h2>Please click on given link to activate your account</h2>
           <p>${process.env.CLIENT_URL}/authentication/activate/${token}</p>
-      `,
-    };
-    mg.messages().send(data, function (error, body) {
-      if (error) {
-        return res.json({
-          error: err.message,
-        });
-      }
-      return res.json({
-        message: "Email has been sent, Kindly activate your account ",
-      });
+         `,
     });
+    // const data = {
+    //   from: "noreply@hello.com",
+    //   to: email,
+    //   subject: "Account Activation Link",
+    //   html: `
+    //       <h2>Please click on given link to activate your account</h2>
+    //       <p>${process.env.CLIENT_URL}/authentication/activate/${token}</p>
+    //   `,
+    // };
+    // mg.messages().send(data, async function (error, body) {
+    //   if (error) {
+    //     return res.json({
+    //       error: err.message,
+    //     });
+    //   }
+    //   const user = await User.findOne({ email }).exec();
+    //   return res.json({
+    //     message: "Email has been sent, Kindly activate your account ",
+    //     token: user.token,
+    //   });
+    // });
   } catch (err) {
     console.log(err);
     return res.status(400).json({ error: "error" });
