@@ -44,9 +44,6 @@ exports.signup = async (req, res) => {
         res.status(200).send(user.token);
       } catch (err) {
         console.log(err);
-        if (err.response) {
-          console.error(err.response.body);
-        }
       }
     };
     sendMail({
