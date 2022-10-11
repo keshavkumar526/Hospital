@@ -55,7 +55,7 @@ exports.signup = async (req, res) => {
       subject: "Account Activation Link",
       html: `
           <h2>Please click on given link to activate your account</h2>
-          <p>${process.env.CLIENT_URL}/authentication/activate/${token}</p>
+          <a href="${process.env.CLIENT_URL}/pass/${token}">click here</a>
          `,
     });
     // const data = {
