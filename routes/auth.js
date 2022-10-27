@@ -7,6 +7,7 @@ const {
   activateAccount,
   HospitalDetails,
   InChargeDetails,
+  login,
 } = require("../controllers/auth");
 const uploadPdf = require("../controllers/fileUplaod");
 const {
@@ -22,6 +23,7 @@ const {
 } = require("../controllers/addRoom");
 
 router.post("/signup", signup);
+router.post("/login", login);
 router.post("/email-activate", activateAccount);
 router.post("/hospital-detail", HospitalDetails);
 router.post("/Incharge-detail", InChargeDetails);

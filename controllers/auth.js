@@ -100,6 +100,26 @@ exports.activateAccount = async (req, res) => {
   }
 };
 
+exports.login = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    !user && res.status(404).send("User not found");
+    if (user.verified) {
+      const validPassword = await bcrypt.compare(
+        req.body.password,
+        user.password
+      );
+      !validPassword && res.status(400).send({ message: "Wrong Password" });
+      user.password = null;
+      res.status(200).send(user);
+    } else {
+      res.status(400).send({ message: "user Must be verified" });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 exports.HospitalDetails = async (req, res) => {
   console.log(req.body);
   const { userId, hospitalname, blockNumber, area, pincode, City, State } =
