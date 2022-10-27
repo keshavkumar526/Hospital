@@ -77,7 +77,7 @@ exports.fetchBed = async (req, res) => {
     const user = await User.findById({ _id: user_Id }).exec();
     !user && res.status(404).send("User not found");
     if (user) {
-      const room = await Room.find({  userId: user_Id }, {bed: 1})
+      const room = await Room.find({  userId: user_Id, name: roomName }, {bed: 1})
       res.status(200).json(room);
     }
   } catch (err) {
